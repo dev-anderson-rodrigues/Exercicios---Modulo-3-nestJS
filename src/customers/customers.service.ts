@@ -13,19 +13,19 @@ export class CustomerService {
   }
   findById(id: number) {
     try {
-
+      
       const customerId = this.customersDb.find((data) => data.id === id);
-
+      
       if (!customerId) {
         throw new NotFoundException(`A car with this id:${id} not found.`);
       }
       return customerId;
     } catch (error) {
       console.log(error);
-
+      
       throw new HttpException(error.message, error.status);
     }
-
+    
   }
   create(payload: CreateCustomersDto) {
     try {
@@ -44,14 +44,25 @@ export class CustomerService {
   update(id: number, payload: UpdateCustomersDto) {
     try {
       const getCustomers = this.findById(id);
-
+      
       return Object.assign(getCustomers, payload);
     } catch (error) {
       console.log(error);
-
+      
       throw new HttpException(error.message, error.status);
     }
   }
-  
+  deleteById(id: number) {
+    const customers = this.findById(id);
 
+    if (customers) {
+      const index = this.customersDb.indexOf(customers);
+      this.customersDb.splice(index, 1);
+      return customers;
+    }
+
+    return null;
+  }
+  
+  
 };
