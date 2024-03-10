@@ -1,6 +1,7 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCustomersDto } from './Dtos/customersDto';
 import { UpdateCustomersDto } from './Dtos/update-customersDto';
+import { Customer } from './entities/customers.entities';
 
 @Injectable()
 export class CustomerService {
@@ -8,16 +9,30 @@ export class CustomerService {
   findAll() {
     return 'Hello arnia.';
   }
-  findAllcustomers(age) {
-    return this.customersDb.filter((item) => item.age === age);
+  findAllcustomers(age?: string): Customer[] {
+    try{
+      if (age){
+       const getCustumers = this.customersDb.filter((item) => item.age === age);
+        return getCustumers
+      }
+      
+      return this.customersDb;
+    }catch (error) {
+      console.log(error);
+      
+      throw new HttpException(error.message, error.status);
+    }
+      
+    
   }
-  findById(id: number) {
+
+  findById(id: number): Customer {
     try {
       
       const customerId = this.customersDb.find((data) => data.id === id);
       
       if (!customerId) {
-        throw new NotFoundException(`A car with this id:${id} not found.`);
+        throw new NotFoundException(customerId.message, customerId.status);
       }
       return customerId;
     } catch (error) {
@@ -27,7 +42,7 @@ export class CustomerService {
     }
     
   }
-  create(payload: CreateCustomersDto) {
+  create(payload: CreateCustomersDto): Customer {
     try {
       
       const customersCreated = { id: new Date().getTime(), ...payload };
@@ -41,7 +56,7 @@ export class CustomerService {
       throw new HttpException(error.message, error.status);
     }
   }
-  update(id: number, payload: UpdateCustomersDto) {
+  update(id: number, payload: UpdateCustomersDto): Customer {
     try {
       const getCustomers = this.findById(id);
       
@@ -52,12 +67,12 @@ export class CustomerService {
       throw new HttpException(error.message, error.status);
     }
   }
-  deleteById(id: number) {
+  deleteById(id: number): Customer {
     const customers = this.findById(id);
 
     if (customers) {
       const index = this.customersDb.indexOf(customers);
-      this.customersDb.splice(index, 1);
+      const userGet = this.customersDb.splice(index, 1);
       return customers;
     }
 

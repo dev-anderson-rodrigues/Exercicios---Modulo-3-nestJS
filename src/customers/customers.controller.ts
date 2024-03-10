@@ -3,7 +3,9 @@ import { CustomerService } from './customers.service';
 import { CreateCustomersDto } from './Dtos/customersDto';
 import { agent } from 'supertest';
 import { UpdateCustomersDto } from './Dtos/update-customersDto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('customers')
 @Controller('customers')
 export class CustomersController {
   constructor(private customerService: CustomerService) { }
@@ -13,8 +15,8 @@ export class CustomersController {
     return this.customerService.findAll();
   }
   @Get('')
-  findAllcustomers(age: string) {
-
+  findAllcustomers(@Query('age') age?: string) {
+    console.log(age)
     return this.customerService.findAllcustomers(age)
 
   }
